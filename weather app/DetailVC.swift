@@ -63,6 +63,24 @@ class DetailVC: UIViewController {
         collectionView.reloadData()
     }
     
+    func showAlertToPrivacySettings(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        guard let settingsURL = URL(string: UIApplicationOpenSettingsURLString) else {
+            return
+        }
+        
+        let settingsActions = UIAlertAction(title: "OK", style: .default) { value in
+            UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
+        }
+        
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        alertController.addAction(settingsActions)
+        present(alertController, animated: true, completion: nil)
+
+    }
 
 }
 
@@ -79,9 +97,9 @@ extension DetailVC: CLLocationManagerDelegate {
         case .authorizedAlways, .authorizedWhenInUse:
             locationManager.requestLocation()
         case .denied:
-            print("I'm sorry, can't show location. User has not authorized it.")
+            showAlertToPrivacySettings(title: "User has not authorized location services", message: "Select settings below")
         case .restricted:
-            print("Access denied. Likely parental controls restrict location")
+            showAlertToPrivacySettings(title: "Location services denied", message: "Parental controls?")
         }
     }
     
